@@ -1,0 +1,31 @@
+{
+  "name": "mv-thin-client",
+  "version": "0.0.0",
+  "authors": [
+    "bnolan@gmail.com"
+  ],
+  "main": "client.coffee",
+  "license": "MIT",
+  "private": true,
+  "dependencies" : {
+    "requirejs" : "*",
+    "jquery" : "2.1.0",
+    "stats.js" : "*",
+    "msgpack-js-browser" : "https://github.com/creationix/msgpack-js-browser.git",
+    "threejs" : "*",
+    "tweenjs" : "*",
+    "jquery-file-upload" : "*",
+    "dat-gui" : "*"
+  },
+  "devDependencies": {
+    "jasmine": "*"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "app/components",
+    "test",
+    "tests"
+  ]
+}
