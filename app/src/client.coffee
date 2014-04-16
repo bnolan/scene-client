@@ -3,14 +3,14 @@ define [
   "/app/src/connector.js",
   "/app/src/uploader.js",
   "/app/components/jquery/dist/jquery.js", 
-  "/app/components/obelisk.js/build/obelisk.js", 
   "/app/components/stats.js/build/stats.min.js",
   "/vendor/orbit-controls.js",
   "/vendor/collada-loader.js",
   "/app/components/dat-gui/build/dat.gui.js"
-], (Scene, Connector, Uploader, _jquery, _obelisk, _stats, _orbit, _collada, _dat) ->
+], (Scene, Connector, Uploader, _jquery, _stats, _orbit, _collada, _dat) ->
   class Client
     constructor: ->
+
       @scene = new Scene
       @connector = new Connector(@scene)
       
@@ -83,7 +83,7 @@ define [
       # light.position.set(0,250,0)
       # @tscene.add(light)
 
-      dirLight = new THREE.DirectionalLight( 0xffffff, 0.8)
+      dirLight = new THREE.DirectionalLight( 0xffffff, 1.0)
       dirLight.position.set( -1, 0.75, 1 )
       dirLight.position.multiplyScalar( 200)
       dirLight.name = "dirlight"
@@ -94,7 +94,7 @@ define [
       dirLight.castShadow = true;
       dirLight.shadowMapWidth = dirLight.shadowMapHeight = 512;
 
-      ambientLight = new THREE.AmbientLight(0x111111)
+      ambientLight = new THREE.AmbientLight(0x333333)
       @tscene.add(ambientLight)
 
     generateCube: ->
@@ -143,7 +143,8 @@ define [
     addPlane: ->
       loader = new THREE.JSONLoader
 
-      loader.load '/public/models/sheep.js', (geometry) =>
+      # loader.load '//localhost:8090/models/homer.js', (geometry, materials) =>
+      loader.load '/public/models/homer.js', (geometry, materials) =>
         material = new THREE.MeshLambertMaterial {
           colorAmbient: [0.480000026226044, 0.480000026226044, 0.480000026226044]
           colorDiffuse: [0.480000026226044, 0.480000026226044, 0.480000026226044]
@@ -152,11 +153,15 @@ define [
 
         material = new THREE.MeshLambertMaterial( { color: 0xDDDDDD } )
         
+        material = new THREE.MeshFaceMaterial( materials )
+
         # create a mesh with models geometry and material
         mesh = new THREE.Mesh(
           geometry,
           material
         )
+        #   material
+        # )
         
         mesh.rotation.y = -Math.PI/2
         mesh.castShadow = true
@@ -228,27 +233,12 @@ define [
       @stats.begin()
 
       TWEEN.update()
-      
-      # @ctx.clearRect(0,0,@width,@height)
 
       for key, element of @scene.childNodes
-        # t = (node.t + new Date().getTime()) / 1000.0
-        # x = Math.sin(t * node.x) * @width / 4 + 400
-        # y = Math.sin(t * node.y) * @height / 4
-
         element.tmodel ||= @generateCube()
         element.tmodel.position = element.position
         element.tmodel.rotation = element.rotation
         element.tmodel.scale = element.scale
-
-        # Twiddle the position order, since obelisk has it's axis set up for 2d
-        #point = new obelisk.Point3D(element.position.x, element.position.z, element.position.y)
-
-        # Draw the shadow
-        #@pixelView.renderObject(@shadow, point)
-
-        # render cube primitive into view
-        #@pixelView.renderObject(@cube, point)
 
       @controls.update()
       @renderer.render( @tscene, @camera )

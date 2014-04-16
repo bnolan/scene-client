@@ -8,14 +8,14 @@
   "license": "MIT",
   "private": true,
   "dependencies" : {
-    "requirejs" : "*",
+    "requirejs" : "2.1.11",
     "jquery" : "2.1.0",
     "stats.js" : "*",
     "msgpack-js-browser" : "https://github.com/creationix/msgpack-js-browser.git",
     "threejs" : "*",
     "tweenjs" : "*",
-    "jquery-file-upload" : "*",
-    "dat-gui" : "*"
+    "jquery-file-upload" : "9.5.7",
+    "dat-gui" : "0.5.0"
   },
   "devDependencies": {
     "jasmine": "*"

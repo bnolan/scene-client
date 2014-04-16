@@ -2,7 +2,7 @@
 (function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  define(["/app/src/scene.js", "/app/src/connector.js", "/app/src/uploader.js", "/app/components/jquery/dist/jquery.js", "/app/components/obelisk.js/build/obelisk.js", "/app/components/stats.js/build/stats.min.js", "/vendor/orbit-controls.js", "/vendor/collada-loader.js", "/app/components/dat-gui/build/dat.gui.js"], function(Scene, Connector, Uploader, _jquery, _obelisk, _stats, _orbit, _collada, _dat) {
+  define(["/app/src/scene.js", "/app/src/connector.js", "/app/src/uploader.js", "/app/components/jquery/dist/jquery.js", "/app/components/stats.js/build/stats.min.js", "/vendor/orbit-controls.js", "/vendor/collada-loader.js", "/app/components/dat-gui/build/dat.gui.js"], function(Scene, Connector, Uploader, _jquery, _stats, _orbit, _collada, _dat) {
     var Client;
     Client = (function() {
 
@@ -69,14 +69,14 @@
 
       Client.prototype.addLights = function() {
         var ambientLight, dirLight;
-        dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
         dirLight.position.set(-1, 0.75, 1);
         dirLight.position.multiplyScalar(200);
         dirLight.name = "dirlight";
         this.tscene.add(dirLight);
         dirLight.castShadow = true;
         dirLight.shadowMapWidth = dirLight.shadowMapHeight = 512;
-        ambientLight = new THREE.AmbientLight(0x111111);
+        ambientLight = new THREE.AmbientLight(0x333333);
         return this.tscene.add(ambientLight);
       };
 
@@ -109,7 +109,7 @@
         var loader,
           _this = this;
         loader = new THREE.JSONLoader;
-        return loader.load('/public/models/sheep.js', function(geometry) {
+        return loader.load('/public/models/homer.js', function(geometry, materials) {
           var material, mesh;
           material = new THREE.MeshLambertMaterial({
             colorAmbient: [0.480000026226044, 0.480000026226044, 0.480000026226044],
@@ -119,6 +119,7 @@
           material = new THREE.MeshLambertMaterial({
             color: 0xDDDDDD
           });
+          material = new THREE.MeshFaceMaterial(materials);
           mesh = new THREE.Mesh(geometry, material);
           mesh.rotation.y = -Math.PI / 2;
           mesh.castShadow = true;
