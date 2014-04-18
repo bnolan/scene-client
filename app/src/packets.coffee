@@ -1,10 +1,9 @@
 define [
-  '/app/components/threejs/build/three.js', 
   '/app/components/tweenjs/build/tween.min.js', 
   '/app/src/utils.js',
   '/app/src/elements/box.js',
   '/app/src/elements/model.js'
-], (THREE_, TWEEN_, utils, Box, Model) ->
+], (TWEEN_, utils, Box, Model) ->
 	class PacketIntroducing
 	  @id: 0x01
 

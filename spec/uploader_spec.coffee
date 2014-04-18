@@ -17,7 +17,7 @@ define [
       @uploader.onSuccess '//asset-server/models/123.js'
       expect(@client.connector.sendPacket).toHaveBeenCalled()
 
-      xml = @client.connector.sendPacket.mostRecentCall.args[0][0][1]
+      xml = @client.connector.sendPacket.mostRecentCall.args[0][1]
 
       expect(xml).toMatch /<model/
       expect(xml).toMatch /position=.1 2 3/

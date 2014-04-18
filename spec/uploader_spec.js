@@ -19,7 +19,7 @@
         spyOn(this.client.connector, 'sendPacket');
         this.uploader.onSuccess('//asset-server/models/123.js');
         expect(this.client.connector.sendPacket).toHaveBeenCalled();
-        xml = this.client.connector.sendPacket.mostRecentCall.args[0][0][1];
+        xml = this.client.connector.sendPacket.mostRecentCall.args[0][1];
         expect(xml).toMatch(/<model/);
         expect(xml).toMatch(/position=.1 2 3/);
         return expect(xml).toMatch(/asset-server.models.123/);

@@ -6,13 +6,10 @@ define [
   "/app/src/elements/model.js",
   "/app/components/jquery/dist/jquery.js", 
   "/app/components/stats.js/build/stats.min.js",
-  "/vendor/orbit-controls.js",
-  "/vendor/collada-loader.js",
   "/app/components/dat-gui/build/dat.gui.js"
-], (Scene, Connector, Uploader, Box, Model, _jquery, _stats, _orbit, _collada, _dat) ->
+], (Scene, Connector, Uploader, Box, Model, _jquery, _stats, _dat) ->
   class Client
     constructor: ->
-
       @scene = new Scene
 
       @connector = new Connector(@scene)
@@ -132,10 +129,13 @@ define [
       for i in intersects
         return i.point
 
+    assetServerHost: ->
+      window.location.host.split(':')[0] + ":8090"
+
     addHomer: ->
       loader = new THREE.JSONLoader
 
-      # loader.load '//localhost:8090/models/homer.js', (geometry, materials) =>
+      # loader.load "//#{@assetServerHost()}/models/homer.js", (geometry, materials) =>
       loader.load '/public/models/homer.js', (geometry, materials) =>
         material = new THREE.MeshFaceMaterial( materials )
 

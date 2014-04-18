@@ -4,7 +4,7 @@ define [
 ], (Model, Packets) ->
   class Uploader
     constructor: (@client) ->
-      @endpoint = "//localhost:8090/upload"
+      @endpoint = "//#{@assetServerHost()}/upload"
 
       $('body').on 'dragover', (e) =>
         if !@message
@@ -12,6 +12,9 @@ define [
 
         @position = @client.detectCollision(e.originalEvent.clientX, e.originalEvent.clientY)
         @position.y = 20
+
+    assetServerHost: ->
+      window.location.host.split(':')[0] + ":8090"
 
     createElements: ->
       @message = $("<div />").addClass("upload-message").html('''

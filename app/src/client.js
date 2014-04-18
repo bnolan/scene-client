@@ -2,7 +2,7 @@
 (function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  define(["/app/src/scene.js", "/app/src/connector.js", "/app/src/uploader.js", "/app/src/elements/box.js", "/app/src/elements/model.js", "/app/components/jquery/dist/jquery.js", "/app/components/stats.js/build/stats.min.js", "/vendor/orbit-controls.js", "/vendor/collada-loader.js", "/app/components/dat-gui/build/dat.gui.js"], function(Scene, Connector, Uploader, Box, Model, _jquery, _stats, _orbit, _collada, _dat) {
+  define(["/app/src/scene.js", "/app/src/connector.js", "/app/src/uploader.js", "/app/src/elements/box.js", "/app/src/elements/model.js", "/app/components/jquery/dist/jquery.js", "/app/components/stats.js/build/stats.min.js", "/app/components/dat-gui/build/dat.gui.js"], function(Scene, Connector, Uploader, Box, Model, _jquery, _stats, _dat) {
     var Client;
     Client = (function() {
 
@@ -117,6 +117,10 @@
           i = intersects[_i];
           return i.point;
         }
+      };
+
+      Client.prototype.assetServerHost = function() {
+        return window.location.host.split(':')[0] + ":8090";
       };
 
       Client.prototype.addHomer = function() {

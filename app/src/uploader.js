@@ -11,7 +11,7 @@
         this.client = client;
         this.onSuccess = __bind(this.onSuccess, this);
 
-        this.endpoint = "//localhost:8090/upload";
+        this.endpoint = "//" + (this.assetServerHost()) + "/upload";
         $('body').on('dragover', function(e) {
           if (!_this.message) {
             _this.createElements();
@@ -20,6 +20,10 @@
           return _this.position.y = 20;
         });
       }
+
+      Uploader.prototype.assetServerHost = function() {
+        return window.location.host.split(':')[0] + ":8090";
+      };
 
       Uploader.prototype.createElements = function() {
         var _this = this;
