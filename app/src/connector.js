@@ -14,6 +14,7 @@
         this.host = window.location.host.split(":")[0];
         this.port = 8080;
         this.protocol = "mv-protocol";
+        this.packets = [];
         this.ws = new WebSocket("ws://" + this.host + ":" + this.port + "/", this.protocol);
         this.ws.binaryType = 'arraybuffer';
         this.ws.onopen = function() {
@@ -25,18 +26,23 @@
         this.ws.onmessage = this.onMessage;
       }
 
+      Connector.prototype.sendPacket = function(packet) {
+        return this.packets.push(packet);
+      };
+
       Connector.prototype.onMessage = function(e) {
-        var klass, message, messages, packet, packetId, _i, _len, _results;
+        var klass, message, messages, packet, packetId, _i, _len;
         messages = msgpack.decode(e.data);
-        _results = [];
         for (_i = 0, _len = messages.length; _i < _len; _i++) {
           message = messages[_i];
           packetId = message[0];
           klass = Packets.dictionary[packetId];
           packet = new klass(message);
-          _results.push(packet.process(this.scene));
+          packet.process(this.scene);
         }
-        return _results;
+        if (this.packets.length > 0) {
+          return this.ws.send(msgpack.encode(this.packets));
+        }
       };
 
       return Connector;

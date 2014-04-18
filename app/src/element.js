@@ -7,9 +7,9 @@
 
       function Element(id) {
         this.id = id;
-        this.position = null;
-        this.rotation = null;
-        this.scale = null;
+        this.position = new THREE.Vector3(0, 0, 0);
+        this.rotation = new THREE.Euler(0, 0, 0);
+        this.scale = new THREE.Vector3(0, 0, 0);
       }
 
       Element.prototype.notify = function() {};

@@ -11,6 +11,7 @@ define [
 	  constructor: (array) ->
       [nil, @xml] = array
 
+
     process: (scene) ->
       element = scene.getElementById(@id)
 
@@ -40,6 +41,9 @@ define [
       scene.appendChild(element)
 
       true
+
+    toWireFormat: ->
+      [@id, @xml]
 
 	class PacketUpdate
 	  @id: 0x02
@@ -71,8 +75,6 @@ define [
       
       newRotation = new THREE.Euler @_byteToEuler(@rotationX, @rotationY, @rotationZ)
 
-      console.log @rotationY
-      
       if !newRotation.equals(element.rotation)
         tween = new TWEEN.Tween( { x : element.rotation.x, y : element.rotation.y, z : element.rotation.z } )
 

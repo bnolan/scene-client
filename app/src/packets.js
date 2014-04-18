@@ -41,6 +41,10 @@
         return true;
       };
 
+      PacketIntroducing.prototype.toWireFormat = function() {
+        return [this.id, this.xml];
+      };
+
       return PacketIntroducing;
 
     })();
@@ -79,7 +83,6 @@
           }).start();
         }
         newRotation = new THREE.Euler(this._byteToEuler(this.rotationX, this.rotationY, this.rotationZ));
-        console.log(this.rotationY);
         if (!newRotation.equals(element.rotation)) {
           tween = new TWEEN.Tween({
             x: element.rotation.x,

@@ -9,6 +9,7 @@ define [
       @host = window.location.host.split(":")[0]
       @port = 8080
       @protocol = "mv-protocol"
+      @packets = []
 
       @ws = new WebSocket("ws://#{@host}:#{@port}/", @protocol);
 
@@ -20,6 +21,9 @@ define [
         console.log "Closed socket"
       @ws.onmessage = @onMessage
 
+    sendPacket: (packet) ->
+      @packets.push packet
+
     onMessage: (e) =>
       messages = msgpack.decode(e.data)
 
@@ -29,5 +33,8 @@ define [
 
         packet = new klass(message)
         packet.process(@scene)
+
+      if @packets.length > 0
+        @ws.send msgpack.encode(@packets)
     
   Connector

@@ -2,7 +2,7 @@
 (function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  define([], function() {
+  define(["/app/src/elements/model.js"], function(Model) {
     var Uploader;
     Uploader = (function() {
 
@@ -42,10 +42,17 @@
       };
 
       Uploader.prototype.onSuccess = function(text) {
+        var element, packet;
         console.log("file upload complete..");
         console.log(text);
         this.removeElements();
-        return this.client.addModel(text, this.position);
+        element = new Model;
+        element.src = text;
+        element.position = this.position;
+        element.rotation.y = -Math.PI / 2;
+        element.scale.x = element.scale.y = element.scale.z = 40.0;
+        packet = new Packet.Introducing(null, element.innerXML);
+        return client.connector.sendPackets([packet.toWireFormat()]);
       };
 
       Uploader.prototype.submit = function() {

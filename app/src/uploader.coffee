@@ -1,4 +1,6 @@
-define [], ->
+define [
+  "/app/src/elements/model.js"
+], (Model) ->
   class Uploader
     constructor: (@client) ->
       @endpoint = "//localhost:8090/upload"
@@ -41,7 +43,19 @@ define [], ->
       console.log "file upload complete.."
       console.log text
       @removeElements()
-      @client.addModel(text, @position)
+
+      element = new Model
+      element.src = text
+      element.position = @position
+      element.rotation.y = -Math.PI/2
+      element.scale.x = element.scale.y = element.scale.z = 40.0
+
+      # Send an introduction packet to the server...
+      # I wonder if we should just send some javascript to the server to do this... I guess I'd need
+      # to work out how to sandbox properly in node.js before we allowed that.
+      packet = new Packet.Introducing(null, element.innerXML)
+      client.connector.sendPackets([packet.toWireFormat()])
+
 
     submit: ->
       # @form.submit()
