@@ -12,6 +12,19 @@
         this.scale = new THREE.Vector3(0, 0, 0);
       }
 
+      Element.prototype.getInnerXML = function() {
+        var child, el;
+        el = $("<xml><" + this.nodeName + " /></xml>");
+        child = el.children();
+        child.attr('position', [this.position.x, this.position.y, this.position.z].join(" "));
+        child.attr('rotation', [this.rotation.x, this.rotation.y, this.rotation.z].join(" "));
+        child.attr('scale', [this.scale.x, this.scale.y, this.scale.z].join(" "));
+        if (this.src) {
+          child.attr('src', this.src);
+        }
+        return el.html();
+      };
+
       Element.prototype.notify = function() {};
 
       return Element;

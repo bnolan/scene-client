@@ -5,7 +5,7 @@
     urlArgs: "nonce=" + (new Date()).getTime()
   });
 
-  define(["/app/components/jasmine/lib/jasmine-core/jasmine.js", "/app/components/jasmine/lib/jasmine-core/jasmine-html.js", "/app/components/jquery/dist/jquery.js", "/app/components/threejs/build/three.js", "./uploader_spec.js"], function() {
+  define(["/app/components/jasmine/lib/jasmine-core/jasmine.js", "/app/components/jasmine/lib/jasmine-core/jasmine-html.js", "/app/components/jquery/dist/jquery.js", "/app/components/threejs/build/three.js", "./uploader_spec.js", "./connector_spec.js"], function() {
     var jasmineEnv, trivialReporter;
     jasmineEnv = jasmine.getEnv();
     jasmineEnv.updateInterval = 1000;

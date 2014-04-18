@@ -7,7 +7,6 @@
     Connector = (function() {
 
       function Connector(scene, host, port) {
-        var _this = this;
         this.scene = scene;
         this.onMessage = __bind(this.onMessage, this);
 
@@ -15,6 +14,10 @@
         this.port = 8080;
         this.protocol = "mv-protocol";
         this.packets = [];
+      }
+
+      Connector.prototype.connect = function() {
+        var _this = this;
         this.ws = new WebSocket("ws://" + this.host + ":" + this.port + "/", this.protocol);
         this.ws.binaryType = 'arraybuffer';
         this.ws.onopen = function() {
@@ -23,11 +26,15 @@
         this.ws.onclose = function() {
           return console.log("Closed socket");
         };
-        this.ws.onmessage = this.onMessage;
-      }
+        return this.ws.onmessage = this.onMessage;
+      };
 
       Connector.prototype.sendPacket = function(packet) {
         return this.packets.push(packet);
+      };
+
+      Connector.prototype.dispatchPackets = function() {
+        return this.ws.send(msgpack.encode(this.packets));
       };
 
       Connector.prototype.onMessage = function(e) {
@@ -41,8 +48,9 @@
           packet.process(this.scene);
         }
         if (this.packets.length > 0) {
-          return this.ws.send(msgpack.encode(this.packets));
+          this.dispatchPackets();
         }
+        return this.packets = [];
       };
 
       return Connector;

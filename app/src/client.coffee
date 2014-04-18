@@ -14,7 +14,9 @@ define [
     constructor: ->
 
       @scene = new Scene
+
       @connector = new Connector(@scene)
+      @connector.connect()
       
       @uploader = new Uploader(this)
 

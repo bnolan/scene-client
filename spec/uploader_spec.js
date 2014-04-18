@@ -5,15 +5,24 @@
     return describe('uploader', function() {
       beforeEach(function() {
         this.client = {
-          connector: {}
+          connector: {
+            sendPacket: function() {
+              return true;
+            }
+          }
         };
         this.uploader = new Uploader(this.client);
         return this.uploader.position = new THREE.Vector3(1, 2, 3);
       });
       return it('should create a packet on success', function() {
-        spyOn(this.client.connector, 'sendPackets');
+        var xml;
+        spyOn(this.client.connector, 'sendPacket');
         this.uploader.onSuccess('//asset-server/models/123.js');
-        return expect(this.client.connector.sendPackets).toHaveBeenCalled();
+        expect(this.client.connector.sendPacket).toHaveBeenCalled();
+        xml = this.client.connector.sendPacket.mostRecentCall.args[0][0][1];
+        expect(xml).toMatch(/<model/);
+        expect(xml).toMatch(/position=.1 2 3/);
+        return expect(xml).toMatch(/asset-server.models.123/);
       });
     });
   });

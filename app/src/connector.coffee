@@ -11,10 +11,9 @@ define [
       @protocol = "mv-protocol"
       @packets = []
 
+    connect: ->
       @ws = new WebSocket("ws://#{@host}:#{@port}/", @protocol);
-
       @ws.binaryType = 'arraybuffer'
-
       @ws.onopen = =>
         console.log "Opened socket"
       @ws.onclose = =>
@@ -23,6 +22,9 @@ define [
 
     sendPacket: (packet) ->
       @packets.push packet
+
+    dispatchPackets: ->
+      @ws.send(msgpack.encode(@packets))
 
     onMessage: (e) =>
       messages = msgpack.decode(e.data)
@@ -35,6 +37,8 @@ define [
         packet.process(@scene)
 
       if @packets.length > 0
-        @ws.send msgpack.encode(@packets)
+        @dispatchPackets()
+
+      @packets = []
     
   Connector

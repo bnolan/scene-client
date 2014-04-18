@@ -11,5 +11,9 @@ define [], () ->
     
     removeChild: (element) ->
       @childNodes[element.id] = null
+
+    firstChild: ->
+      for id, value of @childNodes
+        return value
     
   Scene

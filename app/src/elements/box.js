@@ -13,6 +13,10 @@
         return Box.__super__.constructor.apply(this, arguments);
       }
 
+      Box.prototype.nodeName = 'box';
+
+      Box.nodeName = 'box';
+
       return Box;
 
     })(Element);

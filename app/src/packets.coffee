@@ -11,6 +11,8 @@ define [
 	  constructor: (array) ->
       [nil, @xml] = array
 
+    toWireFormat: ->
+      [PacketIntroducing.id, @xml]
 
     process: (scene) ->
       element = scene.getElementById(@id)
@@ -41,9 +43,6 @@ define [
       scene.appendChild(element)
 
       true
-
-    toWireFormat: ->
-      [@id, @xml]
 
 	class PacketUpdate
 	  @id: 0x02

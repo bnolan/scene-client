@@ -1,6 +1,7 @@
 define [
-  "/app/src/elements/model.js"
-], (Model) ->
+  "/app/src/elements/model.js",
+  "/app/src/packets.js"
+], (Model, Packets) ->
   class Uploader
     constructor: (@client) ->
       @endpoint = "//localhost:8090/upload"
@@ -34,9 +35,11 @@ define [
         , 200)
 
     removeElements: ->
-      @message.remove()
-      @overlay.remove()
-      @form.remove()
+      if @message
+        @message.remove()
+        @overlay.remove()
+        @form.remove()
+
       @message = @overlay = @form = null
 
     onSuccess: (text) =>
@@ -53,8 +56,8 @@ define [
       # Send an introduction packet to the server...
       # I wonder if we should just send some javascript to the server to do this... I guess I'd need
       # to work out how to sandbox properly in node.js before we allowed that.
-      packet = new Packet.Introducing(null, element.innerXML)
-      client.connector.sendPackets([packet.toWireFormat()])
+      packet = new Packets.packets.Introducing([null, element.getInnerXML()])
+      @client.connector.sendPacket(packet.toWireFormat())
 
 
     submit: ->

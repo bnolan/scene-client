@@ -12,6 +12,10 @@
         nil = array[0], this.xml = array[1];
       }
 
+      PacketIntroducing.prototype.toWireFormat = function() {
+        return [PacketIntroducing.id, this.xml];
+      };
+
       PacketIntroducing.prototype.process = function(scene) {
         var dom, element;
         element = scene.getElementById(this.id);
@@ -39,10 +43,6 @@
         }
         scene.appendChild(element);
         return true;
-      };
-
-      PacketIntroducing.prototype.toWireFormat = function() {
-        return [this.id, this.xml];
       };
 
       return PacketIntroducing;

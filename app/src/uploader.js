@@ -2,7 +2,7 @@
 (function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  define(["/app/src/elements/model.js"], function(Model) {
+  define(["/app/src/elements/model.js", "/app/src/packets.js"], function(Model, Packets) {
     var Uploader;
     Uploader = (function() {
 
@@ -35,9 +35,11 @@
       };
 
       Uploader.prototype.removeElements = function() {
-        this.message.remove();
-        this.overlay.remove();
-        this.form.remove();
+        if (this.message) {
+          this.message.remove();
+          this.overlay.remove();
+          this.form.remove();
+        }
         return this.message = this.overlay = this.form = null;
       };
 
@@ -51,8 +53,8 @@
         element.position = this.position;
         element.rotation.y = -Math.PI / 2;
         element.scale.x = element.scale.y = element.scale.z = 40.0;
-        packet = new Packet.Introducing(null, element.innerXML);
-        return client.connector.sendPackets([packet.toWireFormat()]);
+        packet = new Packets.packets.Introducing([null, element.getInnerXML()]);
+        return this.client.connector.sendPacket(packet.toWireFormat());
       };
 
       Uploader.prototype.submit = function() {

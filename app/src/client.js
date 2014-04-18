@@ -12,6 +12,7 @@
         var ASPECT, FAR, NEAR, VIEW_ANGLE, axes;
         this.scene = new Scene;
         this.connector = new Connector(this.scene);
+        this.connector.connect();
         this.uploader = new Uploader(this);
         this.width = $(window).width();
         this.height = $(window).height();

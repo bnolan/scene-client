@@ -21,6 +21,15 @@
         return this.childNodes[element.id] = null;
       };
 
+      Scene.prototype.firstChild = function() {
+        var id, value, _ref;
+        _ref = this.childNodes;
+        for (id in _ref) {
+          value = _ref[id];
+          return value;
+        }
+      };
+
       return Scene;
 
     })();

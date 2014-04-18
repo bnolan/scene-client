@@ -13,6 +13,10 @@
         return Model.__super__.constructor.apply(this, arguments);
       }
 
+      Model.prototype.nodeName = 'model';
+
+      Model.nodeName = 'model';
+
       return Model;
 
     })(Element);
