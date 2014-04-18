@@ -2,12 +2,14 @@ define [
   "/app/src/scene.js",
   "/app/src/connector.js",
   "/app/src/uploader.js",
+  "/app/src/elements/box.js",
+  "/app/src/elements/model.js",
   "/app/components/jquery/dist/jquery.js", 
   "/app/components/stats.js/build/stats.min.js",
   "/vendor/orbit-controls.js",
   "/vendor/collada-loader.js",
   "/app/components/dat-gui/build/dat.gui.js"
-], (Scene, Connector, Uploader, _jquery, _stats, _orbit, _collada, _dat) ->
+], (Scene, Connector, Uploader, Box, Model, _jquery, _stats, _orbit, _collada, _dat) ->
   class Client
     constructor: ->
 
@@ -56,7 +58,7 @@ define [
 
       document.body.appendChild( @renderer.domElement );
 
-      @addPlane() # (new THREE.Vector3 0, 0, 0)
+      # @addHomer() # (new THREE.Vector3 0, 0, 0)
       @tick()
 
 
@@ -94,65 +96,45 @@ define [
       dirLight.castShadow = true;
       dirLight.shadowMapWidth = dirLight.shadowMapHeight = 512;
 
-      ambientLight = new THREE.AmbientLight(0x333333)
+      ambientLight = new THREE.AmbientLight(0x111111)
       @tscene.add(ambientLight)
 
-    generateCube: ->
-      cubeGeometry = new THREE.CubeGeometry(1, 1, 1, 1, 1, 1)
-      material = new THREE.MeshLambertMaterial( { color: 0xFF00aa } )
-      cube = new THREE.Mesh(cubeGeometry, material)
-      cube.position.set(-100, 50, -50);
-      @tscene.add(cube) 
-      cube.castShadow = true
-      cube
+    generateMesh: (element) ->
+      element.tmodel = {} # some kind of stub - maybe a Promise?
+
+      loader = new THREE.JSONLoader
+      loader.crossOrigin = ""
+
+      if element instanceof Box
+        material = new THREE.MeshLambertMaterial( { color: 0xFF00aa } )
+        cubeGeometry = new THREE.CubeGeometry(1, 1, 1, 1, 1, 1)
+        mesh = new THREE.Mesh(cubeGeometry, material)
+        mesh.castShadow = true
+        @tscene.add(mesh) 
+        element.tmodel = mesh
+
+      if element instanceof Model
+        loader.load element.src, (geometry, materials) =>
+          material = new THREE.MeshFaceMaterial( materials )
+          mesh = new THREE.Mesh(geometry,material)
+          mesh.castShadow = true
+          @tscene.add(mesh)
+          element.tmodel = mesh
 
     detectCollision: (x,y) ->
-      # console.log x, y
       vector = new THREE.Vector3( ( x / @width ) * 2 - 1, - ( y / @height ) * 2 + 1, 0.5 )
       @projector.unprojectVector( vector, @camera )
-
       raycaster = new THREE.Raycaster( @camera.position, vector.sub( @camera.position ).normalize() )
-
       intersects = raycaster.intersectObjects([@floor])
 
       for i in intersects
-        # console.log i.object
-        # console.log i.point
         return i.point
 
-        # if ( intersects.length > 0 ) {
-
-        #   intersects[ 0 ].object.material.color.setHex( Math.random() * 0xffffff );
-
-        #   var particle = new THREE.Sprite( particleMaterial );
-        #   particle.position = intersects[ 0 ].point;
-        #   particle.scale.x = particle.scale.y = 16;
-        #   scene.add( particle );
-
-        # }
-
-        # /*
-        # // Parse all the faces
-        # for ( var i in intersects ) {
-
-        #   intersects[ i ].face.material[ 0 ].color.setHex( Math.random() * 0xffffff | 0x80000000 );
-
-        # }
-        # */
-
-    addPlane: ->
+    addHomer: ->
       loader = new THREE.JSONLoader
 
       # loader.load '//localhost:8090/models/homer.js', (geometry, materials) =>
       loader.load '/public/models/homer.js', (geometry, materials) =>
-        material = new THREE.MeshLambertMaterial {
-          colorAmbient: [0.480000026226044, 0.480000026226044, 0.480000026226044]
-          colorDiffuse: [0.480000026226044, 0.480000026226044, 0.480000026226044]
-          colorSpecular: [0.8999999761581421, 0.8999999761581421, 0.8999999761581421]
-        }
-
-        material = new THREE.MeshLambertMaterial( { color: 0xDDDDDD } )
-        
         material = new THREE.MeshFaceMaterial( materials )
 
         # create a mesh with models geometry and material
@@ -170,6 +152,7 @@ define [
         @tscene.add(mesh)
 
         @selectModel(mesh)
+
 
     addModel: (url, position) ->
       loader = new THREE.JSONLoader
@@ -193,6 +176,8 @@ define [
         @selectModel(mesh)
 
     selectModel: (mesh) ->
+      return
+
       gui = new dat.GUI()
 
       f1 = gui.addFolder('Rotation')
@@ -235,7 +220,9 @@ define [
       TWEEN.update()
 
       for key, element of @scene.childNodes
-        element.tmodel ||= @generateCube()
+        if !element.tmodel
+          @generateMesh(element)
+
         element.tmodel.position = element.position
         element.tmodel.rotation = element.rotation
         element.tmodel.scale = element.scale

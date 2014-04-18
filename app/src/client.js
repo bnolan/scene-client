@@ -2,7 +2,7 @@
 (function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  define(["/app/src/scene.js", "/app/src/connector.js", "/app/src/uploader.js", "/app/components/jquery/dist/jquery.js", "/app/components/stats.js/build/stats.min.js", "/vendor/orbit-controls.js", "/vendor/collada-loader.js", "/app/components/dat-gui/build/dat.gui.js"], function(Scene, Connector, Uploader, _jquery, _stats, _orbit, _collada, _dat) {
+  define(["/app/src/scene.js", "/app/src/connector.js", "/app/src/uploader.js", "/app/src/elements/box.js", "/app/src/elements/model.js", "/app/components/jquery/dist/jquery.js", "/app/components/stats.js/build/stats.min.js", "/vendor/orbit-controls.js", "/vendor/collada-loader.js", "/app/components/dat-gui/build/dat.gui.js"], function(Scene, Connector, Uploader, Box, Model, _jquery, _stats, _orbit, _collada, _dat) {
     var Client;
     Client = (function() {
 
@@ -43,7 +43,6 @@
         axes = new THREE.AxisHelper(100);
         this.tscene.add(axes);
         document.body.appendChild(this.renderer.domElement);
-        this.addPlane();
         this.tick();
       }
 
@@ -76,21 +75,35 @@
         this.tscene.add(dirLight);
         dirLight.castShadow = true;
         dirLight.shadowMapWidth = dirLight.shadowMapHeight = 512;
-        ambientLight = new THREE.AmbientLight(0x333333);
+        ambientLight = new THREE.AmbientLight(0x111111);
         return this.tscene.add(ambientLight);
       };
 
-      Client.prototype.generateCube = function() {
-        var cube, cubeGeometry, material;
-        cubeGeometry = new THREE.CubeGeometry(1, 1, 1, 1, 1, 1);
-        material = new THREE.MeshLambertMaterial({
-          color: 0xFF00aa
-        });
-        cube = new THREE.Mesh(cubeGeometry, material);
-        cube.position.set(-100, 50, -50);
-        this.tscene.add(cube);
-        cube.castShadow = true;
-        return cube;
+      Client.prototype.generateMesh = function(element) {
+        var cubeGeometry, loader, material, mesh,
+          _this = this;
+        element.tmodel = {};
+        loader = new THREE.JSONLoader;
+        loader.crossOrigin = "";
+        if (element instanceof Box) {
+          material = new THREE.MeshLambertMaterial({
+            color: 0xFF00aa
+          });
+          cubeGeometry = new THREE.CubeGeometry(1, 1, 1, 1, 1, 1);
+          mesh = new THREE.Mesh(cubeGeometry, material);
+          mesh.castShadow = true;
+          this.tscene.add(mesh);
+          element.tmodel = mesh;
+        }
+        if (element instanceof Model) {
+          return loader.load(element.src, function(geometry, materials) {
+            material = new THREE.MeshFaceMaterial(materials);
+            mesh = new THREE.Mesh(geometry, material);
+            mesh.castShadow = true;
+            _this.tscene.add(mesh);
+            return element.tmodel = mesh;
+          });
+        }
       };
 
       Client.prototype.detectCollision = function(x, y) {
@@ -105,20 +118,12 @@
         }
       };
 
-      Client.prototype.addPlane = function() {
+      Client.prototype.addHomer = function() {
         var loader,
           _this = this;
         loader = new THREE.JSONLoader;
         return loader.load('/public/models/homer.js', function(geometry, materials) {
           var material, mesh;
-          material = new THREE.MeshLambertMaterial({
-            colorAmbient: [0.480000026226044, 0.480000026226044, 0.480000026226044],
-            colorDiffuse: [0.480000026226044, 0.480000026226044, 0.480000026226044],
-            colorSpecular: [0.8999999761581421, 0.8999999761581421, 0.8999999761581421]
-          });
-          material = new THREE.MeshLambertMaterial({
-            color: 0xDDDDDD
-          });
           material = new THREE.MeshFaceMaterial(materials);
           mesh = new THREE.Mesh(geometry, material);
           mesh.rotation.y = -Math.PI / 2;
@@ -150,6 +155,7 @@
 
       Client.prototype.selectModel = function(mesh) {
         var f1, f2, f3, gui, max, min, range;
+        return;
         gui = new dat.GUI();
         f1 = gui.addFolder('Rotation');
         f1.add(mesh.rotation, 'x', -Math.PI, Math.PI);
@@ -199,7 +205,9 @@
         _ref = this.scene.childNodes;
         for (key in _ref) {
           element = _ref[key];
-          element.tmodel || (element.tmodel = this.generateCube());
+          if (!element.tmodel) {
+            this.generateMesh(element);
+          }
           element.tmodel.position = element.position;
           element.tmodel.rotation = element.rotation;
           element.tmodel.scale = element.scale;

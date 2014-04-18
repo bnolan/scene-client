@@ -2,8 +2,9 @@ define [
   '/app/components/threejs/build/three.js', 
   '/app/components/tweenjs/build/tween.min.js', 
   '/app/src/utils.js',
-  '/app/src/elements/box.js'
-], (THREE_, TWEEN_, utils, Box) ->
+  '/app/src/elements/box.js',
+  '/app/src/elements/model.js'
+], (THREE_, TWEEN_, utils, Box, Model) ->
 	class PacketIntroducing
 	  @id: 0x01
 
@@ -17,18 +18,24 @@ define [
         # todo - reparse the xml without deleting / creating the element
         scene.removeChild(element)
 
+      console.log @xml
+
       dom = $(@xml).first()
 
       @id = dom.attr('id')
 
-      element = switch dom.get(0).nodeName
-        when 'BOX' then new Box @id
+      element = switch dom.get(0).nodeName.toLowerCase()
+        when 'box' then new Box @id
+        when 'model' then new Model @id
         else
           throw "Invalid element introduced"
       
       element.position = utils.attributeToVector(dom.attr('position'))
       element.rotation = utils.attributeToEuler(dom.attr('rotation'))
       element.scale = utils.attributeToVector(dom.attr('scale'))
+
+      if dom.attr('src')
+        element.src = dom.attr('src')
 
       scene.appendChild(element)
 
@@ -50,18 +57,31 @@ define [
         # console.log "Trying to update non-present element #{@id}"
         return
 
-      tween = new TWEEN.Tween( { x : element.position.x, y : element.position.y, z : element.position.z } )
+      newPosition = new THREE.Vector3 @positionX, @positionY, @positionZ
 
-      tween.to( { x : @positionX, y : @positionY, z : @positionZ }, 500).
-        easing(TWEEN.Easing.Linear.None).
-        onUpdate( -> element.position = new THREE.Vector3(@x, @y, @z)).
-        start()
+      if !newPosition.equals(element.position)
+        tween = new TWEEN.Tween( { x : element.position.x, y : element.position.y, z : element.position.z } )
+
+        tween.to( { x : newPosition.x, y : newPosition.y, z : newPosition.z }, 500).
+          easing(TWEEN.Easing.Linear.None).
+          onUpdate( -> element.position = new THREE.Vector3(@x, @y, @z)).
+          start()
       
       #element.position = new THREE.Vector3 @positionX, @positionY, @positionZ
       
-      element.rotation = new THREE.Euler @_byteToEuler(@rotationX, @rotationY, @rotationZ)
+      newRotation = new THREE.Euler @_byteToEuler(@rotationX, @rotationY, @rotationZ)
 
-      # Do something...
+      console.log @rotationY
+      
+      if !newRotation.equals(element.rotation)
+        tween = new TWEEN.Tween( { x : element.rotation.x, y : element.rotation.y, z : element.rotation.z } )
+
+        tween.to( { x : @rotationX, y : @rotationY, z : @rotationZ }, 500).
+          easing(TWEEN.Easing.Linear.None).
+          onUpdate( -> element.rotation = new THREE.Euler(@x, @y, @z)).
+          start()
+
+
       element.notify()
 
       true
