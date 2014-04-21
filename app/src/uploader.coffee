@@ -10,6 +10,8 @@ define [
         if !@message
           @createElements()
 
+        # console.log "trying to detect... #{e.originalEvent.clientX} #{e.originalEvent.clientY}"
+
         @position = @client.detectCollision(e.originalEvent.clientX, e.originalEvent.clientY)
         @position.y = 20
 

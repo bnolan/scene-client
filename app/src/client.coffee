@@ -38,8 +38,8 @@ define [
       @camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR)
       @tscene.add(@camera)
 
-      @camera.position.set(0,150,400)
-      @camera.lookAt(@tscene.position)
+      @camera.position.set(0,10,0)
+      # @camera.lookAt(@tscene.position)
 
       @renderer = new THREE.WebGLRenderer( {antialias:true} )
       @renderer.setSize(@width, @height)
@@ -47,6 +47,7 @@ define [
       @renderer.setClearColor( 0xffffff, 1)
 
       @projector = new THREE.Projector()
+      @time = Date.now()
 
       @addLights()
       @addFloor()
@@ -61,9 +62,54 @@ define [
       # @addHomer() # (new THREE.Vector3 0, 0, 0)
       @tick()
 
+    hasPointerLock: ->
+      document.pointerLockElement || document.mozPointerLockElement || document.webkitPointerLockElement
+
+    pointerlockerror: (event) =>
+      alert "[FAIL] There was an error acquiring pointerLock. You will not be able to use metaverse.sh."
+
+    pointerlockchange: (event) =>
+      if @hasPointerLock()
+        @controls.enabled = true
+        @showBlocker()
+        @hideInstructions()
+      else
+        @controls.enabled = false
+        @showInstructions()
+        @hideBlocker()
+
     addInstructions: ->
+      $("#instructions").show().click =>
+        # if !@hasPointerLock()
+        #   alert "[FAIL] Your browser doesn't seem to support pointerlock. You will not be able to use metaverse.sh."
+        # else
+
+        element = document.body
+
+        document.addEventListener( 'pointerlockchange', @pointerlockchange, false )
+        document.addEventListener( 'mozpointerlockchange', @pointerlockchange, false )
+        document.addEventListener( 'webkitpointerlockchange', @pointerlockchange, false )
+
+        document.addEventListener( 'pointerlockerror', @pointerlockerror, false )
+        document.addEventListener( 'mozpointerlockerror', @pointerlockerror, false )
+        document.addEventListener( 'webkitpointerlockerror', @pointerlockerror, false )
+
+        element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
+        element.requestPointerLock()
+
+    showBlocker: ->
+      @blockerElement ||= $("<div />").addClass("blocker").appendTo 'body'
+      @blockerElement.show()
+
+    hideBlocker: ->
+      if @blockerElement
+        @blockerElement.hide()
+
+    showInstructions: ->
       $("#instructions").show()
 
+    hideInstructions: ->
+      $("#instructions").hide()
 
     addFloor: ->
       floorTexture = new THREE.ImageUtils.loadTexture( '/public/images/grid.png' )
@@ -81,7 +127,11 @@ define [
       @tscene.add(@floor)
 
     addControls: ->
-      @controls = new THREE.OrbitControls( @camera, @renderer.domElement )
+      # @controls = new THREE.OrbitControls( @camera, @renderer.domElement )
+      @controls = new THREE.PointerLockControls ( @camera )
+      @controls.enabled = false
+      @tscene.add(@controls.getObject())
+
 
     addLights: ->
       # light = new THREE.PointLight(0xffffff)
@@ -126,12 +176,17 @@ define [
 
     detectCollision: (x,y) ->
       vector = new THREE.Vector3( ( x / @width ) * 2 - 1, - ( y / @height ) * 2 + 1, 0.5 )
+
+      console.log @camera
+
       @projector.unprojectVector( vector, @camera )
       raycaster = new THREE.Raycaster( @camera.position, vector.sub( @camera.position ).normalize() )
       intersects = raycaster.intersectObjects([@floor])
 
       for i in intersects
         return i.point
+
+      console.log 'sadface'
 
     assetServerHost: ->
       window.location.host.split(':')[0] + ":8090"
@@ -233,10 +288,13 @@ define [
         element.tmodel.rotation = element.rotation
         element.tmodel.scale = element.scale
 
-      @controls.update()
+      # @controls.update()
+      @controls.update( Date.now() - @time )
       @renderer.render( @tscene, @camera )
 
       @stats.end()
+
+      @time = Date.now()
 
       requestAnimationFrame @tick
 

@@ -9,6 +9,10 @@
       function Client() {
         this.tick = __bind(this.tick, this);
 
+        this.pointerlockchange = __bind(this.pointerlockchange, this);
+
+        this.pointerlockerror = __bind(this.pointerlockerror, this);
+
         var ASPECT, FAR, NEAR, VIEW_ANGLE, axes;
         this.scene = new Scene;
         this.connector = new Connector(this.scene);
@@ -29,8 +33,7 @@
         this.tscene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
         this.tscene.add(this.camera);
-        this.camera.position.set(0, 150, 400);
-        this.camera.lookAt(this.tscene.position);
+        this.camera.position.set(0, 10, 0);
         this.renderer = new THREE.WebGLRenderer({
           antialias: true
         });
@@ -38,6 +41,7 @@
         this.renderer.shadowMapEnabled = true;
         this.renderer.setClearColor(0xffffff, 1);
         this.projector = new THREE.Projector();
+        this.time = Date.now();
         this.addLights();
         this.addFloor();
         this.addControls();
@@ -48,8 +52,59 @@
         this.tick();
       }
 
+      Client.prototype.hasPointerLock = function() {
+        return document.pointerLockElement || document.mozPointerLockElement || document.webkitPointerLockElement;
+      };
+
+      Client.prototype.pointerlockerror = function(event) {
+        return alert("[FAIL] There was an error acquiring pointerLock. You will not be able to use metaverse.sh.");
+      };
+
+      Client.prototype.pointerlockchange = function(event) {
+        if (this.hasPointerLock()) {
+          this.controls.enabled = true;
+          this.showBlocker();
+          return this.hideInstructions();
+        } else {
+          this.controls.enabled = false;
+          this.showInstructions();
+          return this.hideBlocker();
+        }
+      };
+
       Client.prototype.addInstructions = function() {
+        var _this = this;
+        return $("#instructions").show().click(function() {
+          var element;
+          element = document.body;
+          document.addEventListener('pointerlockchange', _this.pointerlockchange, false);
+          document.addEventListener('mozpointerlockchange', _this.pointerlockchange, false);
+          document.addEventListener('webkitpointerlockchange', _this.pointerlockchange, false);
+          document.addEventListener('pointerlockerror', _this.pointerlockerror, false);
+          document.addEventListener('mozpointerlockerror', _this.pointerlockerror, false);
+          document.addEventListener('webkitpointerlockerror', _this.pointerlockerror, false);
+          element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
+          return element.requestPointerLock();
+        });
+      };
+
+      Client.prototype.showBlocker = function() {
+        this.blockerElement || (this.blockerElement = $("<div />").addClass("blocker").appendTo('body'));
+        return this.blockerElement.show();
+      };
+
+      Client.prototype.hideBlocker = function() {
+        if (this.blockerElement) {
+          return this.blockerElement.hide();
+        }
+      };
+
+      Client.prototype.showInstructions = function() {
         return $("#instructions").show();
+      };
+
+      Client.prototype.hideInstructions = function() {
+        return $("#instructions").hide();
       };
 
       Client.prototype.addFloor = function() {
@@ -69,7 +124,9 @@
       };
 
       Client.prototype.addControls = function() {
-        return this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+        this.controls = new THREE.PointerLockControls(this.camera);
+        this.controls.enabled = false;
+        return this.tscene.add(this.controls.getObject());
       };
 
       Client.prototype.addLights = function() {
@@ -115,6 +172,7 @@
       Client.prototype.detectCollision = function(x, y) {
         var i, intersects, raycaster, vector, _i, _len;
         vector = new THREE.Vector3((x / this.width) * 2 - 1, -(y / this.height) * 2 + 1, 0.5);
+        console.log(this.camera);
         this.projector.unprojectVector(vector, this.camera);
         raycaster = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
         intersects = raycaster.intersectObjects([this.floor]);
@@ -122,6 +180,7 @@
           i = intersects[_i];
           return i.point;
         }
+        return console.log('sadface');
       };
 
       Client.prototype.assetServerHost = function() {
@@ -222,9 +281,10 @@
           element.tmodel.rotation = element.rotation;
           element.tmodel.scale = element.scale;
         }
-        this.controls.update();
+        this.controls.update(Date.now() - this.time);
         this.renderer.render(this.tscene, this.camera);
         this.stats.end();
+        this.time = Date.now();
         return requestAnimationFrame(this.tick);
       };
 
