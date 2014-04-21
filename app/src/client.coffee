@@ -51,6 +51,7 @@ define [
       @addLights()
       @addFloor()
       @addControls()
+      @addInstructions()
 
       axes = new THREE.AxisHelper(100)
       @tscene.add(axes)
@@ -59,6 +60,9 @@ define [
 
       # @addHomer() # (new THREE.Vector3 0, 0, 0)
       @tick()
+
+    addInstructions: ->
+      $("#instructions").show()
 
 
     addFloor: ->

@@ -41,11 +41,16 @@
         this.addLights();
         this.addFloor();
         this.addControls();
+        this.addInstructions();
         axes = new THREE.AxisHelper(100);
         this.tscene.add(axes);
         document.body.appendChild(this.renderer.domElement);
         this.tick();
       }
+
+      Client.prototype.addInstructions = function() {
+        return $("#instructions").show();
+      };
 
       Client.prototype.addFloor = function() {
         var floorGeometry, floorMaterial, floorTexture;

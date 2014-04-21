@@ -12,11 +12,27 @@
     <script src="/app/components/msgpack-js-browser/msgpack.js"></script>
     <script src="/app/components/threejs/build/three.js"></script>
     <script src="/vendor/orbit-controls.js"></script>
+    <script src="/vendor/pointer-lock-controls.js"></script>
     <script src="/vendor/collada-loader.js"></script>
 
     <script data-main="app/src/app.js" src="app/components/requirejs/require.js"></script>
   </head>
   <body>
+
+  <div id="instructions" class="overlay">
+    <h1>Click to play</h1>
+
+    <div class="keys">
+      <span class="key w">W</span>
+      <span class="key a">A</span>
+      <span class="key s">S</span>
+      <span class="key d">D</span>
+    </div>
+
+    <small>
+      (W, A, S, D = Move, SPACE = Jump, MOUSE = Look around)
+    </small>
+  </div>
 
   </body>
 </html>
