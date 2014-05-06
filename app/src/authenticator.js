@@ -10,7 +10,7 @@
         var div, ifame;
 
         div = $("<div id='authenticator' />");
-        ifame = $("<iframe src='");
+        ifame = $("<iframe src='...'></iframe>");
         return div.addClass('a');
       };
 

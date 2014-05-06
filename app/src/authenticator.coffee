@@ -4,7 +4,8 @@ define [
     auth: ->
       div = $("<div id='authenticator' />")
 
-      ifame = $("<iframe src='")
+      ifame = $("<iframe src='...'></iframe>")
+      
       div.addClass 'a'
 
   Authenticator
