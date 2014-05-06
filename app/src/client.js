@@ -14,7 +14,6 @@
 
         this.scene = new Scene;
         this.authenticator = new Authenticator;
-        this.authenticator.auth();
         this.connector = new Connector(this.scene);
         this.connector.connect(this.authenticator);
         this.uploader = new Uploader(this);
@@ -47,7 +46,6 @@
         this.addFloor();
         this.addControls();
         this.addInstructions();
-        this.loadTerrain();
         axes = new THREE.AxisHelper(100);
         this.tscene.add(axes);
         document.body.appendChild(this.renderer.domElement);
@@ -126,65 +124,6 @@
         this.floor.rotation.x = -Math.PI / 2;
         this.floor.receiveShadow = true;
         return this.tscene.add(this.floor);
-      };
-
-      Client.prototype.loadTerrain = function() {
-        var map, materials,
-          _this = this;
-
-        map = THREE.ImageUtils.loadTexture('/public/images/grid.png');
-        map.wrapS = map.wrapT = THREE.RepeatWrapping;
-        map.anisotropy = 64;
-        materials = [
-          new THREE.MeshLambertMaterial({
-            ambient: 0xffffff,
-            map: map
-          })
-        ];
-        return $.ajax({
-          url: '/public/terrain.json',
-          dataType: 'json',
-          success: function(polygons) {
-            var geometry, material, multiplier, object, points, polygon, pt, shape, _i, _j, _len, _len1, _results;
-
-            multiplier = 1.0;
-            _results = [];
-            for (_i = 0, _len = polygons.length; _i < _len; _i++) {
-              polygon = polygons[_i];
-              points = polygon.map(function(vector) {
-                return new THREE.Vector3(vector.x * multiplier, vector.y * multiplier, 0);
-              });
-              shape = new THREE.Shape(points);
-              geometry = new THREE.Geometry;
-              for (_j = 0, _len1 = points.length; _j < _len1; _j++) {
-                pt = points[_j];
-                geometry.vertices.push(pt);
-              }
-              material = new THREE.LineBasicMaterial({
-                color: 0x777777,
-                opacity: 1.0,
-                linewidth: 2
-              });
-              object = new THREE.Line(geometry, material);
-              object.position.set(-500, polygon[0].z / 4 + 2, 500);
-              object.rotation.x = -Math.PI / 2;
-              object.scale.set(2, 2, 1);
-              _this.tscene.add(object);
-              geometry = new THREE.ShapeGeometry(shape);
-              geometry = new THREE.ExtrudeGeometry(shape, {
-                amount: 2,
-                bevelEnabled: false,
-                steps: 2
-              });
-              object = THREE.SceneUtils.createMultiMaterialObject(geometry, materials);
-              object.position.set(-500, polygon[0].z / 4, 500);
-              object.rotation.x = -Math.PI / 2;
-              object.scale.set(2, 2, 1);
-              _results.push(_this.tscene.add(object));
-            }
-            return _results;
-          }
-        });
       };
 
       Client.prototype.addControls = function() {

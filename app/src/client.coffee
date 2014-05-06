@@ -14,7 +14,7 @@ define [
       @scene = new Scene
 
       @authenticator = new Authenticator
-      @authenticator.auth()
+      # @authenticator.auth()
 
       @connector = new Connector(@scene)
       @connector.connect(@authenticator)
@@ -58,7 +58,6 @@ define [
       @addFloor()
       @addControls()
       @addInstructions()
-      @loadTerrain()
 
       axes = new THREE.AxisHelper(100)
       @tscene.add(axes)
@@ -131,47 +130,6 @@ define [
       @floor.receiveShadow = true
 
       @tscene.add(@floor)
-
-    loadTerrain: ->
-      map = THREE.ImageUtils.loadTexture( '/public/images/grid.png' )
-      map.wrapS = map.wrapT = THREE.RepeatWrapping
-      map.anisotropy = 64
-
-      materials = [
-        new THREE.MeshLambertMaterial( { ambient: 0xffffff, map: map } )
-      ]
-
-      $.ajax {
-        url : '/public/terrain.json'
-        dataType : 'json',
-        success : (polygons) =>
-          multiplier = 1.0;
-
-          for polygon in polygons
-            points = polygon.map (vector) -> new THREE.Vector3(vector.x * multiplier, vector.y * multiplier, 0)
-            shape = new THREE.Shape( points )
-            geometry = new THREE.Geometry;
-            
-            for pt in points
-              geometry.vertices.push(pt)
-
-            material = new THREE.LineBasicMaterial( { color: 0x777777, opacity: 1.0, linewidth: 2 } );
-            object = new THREE.Line(geometry, material);
-
-            object.position.set( -500, polygon[0].z / 4  + 2, 500 );
-            object.rotation.x = -Math.PI / 2;
-            object.scale.set(2,2,1);
-            @tscene.add( object );
-
-            geometry = new THREE.ShapeGeometry( shape );
-            geometry = new THREE.ExtrudeGeometry( shape, { amount : 2, bevelEnabled : false, steps : 2 } );
-
-            object = THREE.SceneUtils.createMultiMaterialObject( geometry, materials );
-            object.position.set( -500, polygon[0].z / 4, 500 );
-            object.rotation.x = -Math.PI / 2;
-            object.scale.set(2,2,1);
-            @tscene.add( object );
-        }
 
     addControls: ->
       # @controls = new THREE.OrbitControls( @camera, @renderer.domElement )

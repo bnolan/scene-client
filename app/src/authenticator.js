@@ -6,13 +6,7 @@
     Authenticator = (function() {
       function Authenticator() {}
 
-      Authenticator.prototype.auth = function() {
-        var div, ifame;
-
-        div = $("<div id='authenticator' />");
-        ifame = $("<iframe src='...'></iframe>");
-        return div.addClass('a');
-      };
+      Authenticator.prototype.auth = function() {};
 
       return Authenticator;
 
