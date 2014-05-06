@@ -49,8 +49,8 @@ define [
 	  constructor: (array) ->
       [nil, @id, @positionX, @positionY, @positionZ, @rotationX, @rotationY, @rotationZ] = array
 
-    _byteToEuler: (byte) ->
-      byte / 256.0 * 2 * Math.PI
+    toWireFormat: ->
+      [PacketUpdate.id, @id, @positionX, @positionY, @positionZ, @rotationX, @rotationY, @rotationZ]
 
     process: (scene) ->
       element = scene.getElementById(@id)
@@ -71,7 +71,7 @@ define [
       
       #element.position = new THREE.Vector3 @positionX, @positionY, @positionZ
       
-      newRotation = new THREE.Euler @_byteToEuler(@rotationX, @rotationY, @rotationZ)
+      newRotation = new THREE.Euler @rotationX, @rotationY, @rotationZ
 
       if !newRotation.equals(element.rotation)
         tween = new TWEEN.Tween( { x : element.rotation.x, y : element.rotation.y, z : element.rotation.z } )

@@ -14,7 +14,7 @@
 
         this.scene = new Scene;
         this.authenticator = new Authenticator;
-        this.connector = new Connector(this.scene);
+        this.connector = new Connector(this.scene, this.camera);
         this.connector.connect(this.authenticator);
         this.uploader = new Uploader(this);
         this.width = $(window).width();
@@ -32,8 +32,8 @@
         this.tscene = new THREE.Scene();
         this.tscene.fog = new THREE.Fog(0xffffff, 200, 400);
         this.camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
-        this.tscene.add(this.camera);
         this.camera.position.set(0, 10, 0);
+        this.tscene.add(this.camera);
         this.renderer = new THREE.WebGLRenderer({
           antialias: true
         });

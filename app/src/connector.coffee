@@ -5,9 +5,9 @@ define [
 ], (msgpack_, Packets) ->
 
   class Connector
-    constructor: (@scene, host, port) ->
-      @host = window.location.host.split(":")[0]
-      @port = 8080
+    constructor: (@scene, @camera, host, port) ->
+      @host = host || window.location.host.split(":")[0]
+      @port = port || 8080
       @protocol = "mv-protocol"
       @packets = []
 
@@ -16,8 +16,10 @@ define [
       @ws.binaryType = 'arraybuffer'
       @ws.onopen = =>
         console.log "Opened socket"
+        @interval = setInterval @tick, 1000 / 2
       @ws.onclose = =>
         console.log "Closed socket"
+        clearInterval @interval
       @ws.onmessage = @onMessage
 
     sendPacket: (packet) ->
@@ -26,6 +28,9 @@ define [
     dispatchPackets: ->
       @ws.send(msgpack.encode(@packets))
 
+    tick: ->
+
+      
     onMessage: (e) =>
       messages = msgpack.decode(e.data)
 

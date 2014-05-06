@@ -16,7 +16,7 @@ define [
       @authenticator = new Authenticator
       # @authenticator.auth()
 
-      @connector = new Connector(@scene)
+      @connector = new Connector(@scene, @camera)
       @connector.connect(@authenticator)
       
       @uploader = new Uploader(this)
@@ -41,10 +41,8 @@ define [
       @tscene.fog = new THREE.Fog( 0xffffff, 200, 400 );
 
       @camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR)
-      @tscene.add(@camera)
-
       @camera.position.set(0,10,0)
-      # @camera.lookAt(@tscene.position)
+      @tscene.add(@camera)
 
       @renderer = new THREE.WebGLRenderer( {antialias:true} )
       @renderer.setSize(@width, @height)
@@ -283,6 +281,7 @@ define [
     tick: =>
       @stats.begin()
 
+      # Animate between network updates
       TWEEN.update()
 
       for key, element of @scene.childNodes
