@@ -60,6 +60,29 @@ h1, h2, h3, h4, h5 {
   height: 100%;
   opacity: 0.01; }
 
+#auth {
+  background: white;
+  border-radius: 4px;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+  border: 2px solid #999;
+  color: #333;
+  z-index: 1000;
+  text-align: center;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 400px;
+  height: 150px;
+  margin: -95px 0 0 -220px;
+  line-height: 1.5em;
+  padding: 40px; }
+  #auth h1 {
+    font-size: 2.2em;
+    text-align: center;
+    letter-spacing: -2px;
+    margin: 0 0 20px 0;
+    padding: 0; }
+
 #instructions {
   background: white;
   border-radius: 4px;
